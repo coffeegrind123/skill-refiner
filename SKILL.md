@@ -83,7 +83,7 @@ Check every item and record the result as PASS, WARN, or FAIL:
 
 ## Gotchas
 
-- **Named `arguments` bind one whitespace-separated word each.** `arguments: [target]` + `$target` turns `/x on the foo skill` into `target = "on"`. A free-text argument needs `$ARGUMENTS`.
+- **Named `arguments` bind one whitespace-separated word each.** `arguments: [target]` + `$target` turns `/x on the foo skill` into `target = "on"`. A free-text argument needs the whole-argument placeholder (a dollar sign followed by `ARGUMENTS`). Write that placeholder literally only where the input belongs: Claude Code substitutes it everywhere in the body, code spans included.
 - **Two frontmatter standards.** The agentskills spec allows six keys (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`); Claude Code also reads `when_to_use`, `argument-hint`, `arguments`, `context`. Report which one a skill targets; don't push it to the other unasked.
 - **Respect documented deviations.** If a skill explains a deliberate departure (e.g. bare `Bash` in a maintenance reference), report it as a WARN with the stated reason and recommend no change unless the reason is wrong.
 - **A trimmed section must land somewhere.** When moving content to `references/`, check the target doesn't already hold it, and keep any fact that exists nowhere else.
