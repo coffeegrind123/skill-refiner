@@ -66,7 +66,7 @@ Full validation criteria for Agent Skills. Each item includes the rule, why it m
 
 ### Token Budget
 - **Rule**: Body should be < 500 lines AND < 5,000 tokens
-- **Estimate**: tokens ~= lines x 4 (rough average for markdown)
+- **Estimate**: tokens ~= characters / 4. Do not use lines x 4: a 413-line body of long prose lines measured ~6,300 tokens against a lines-based estimate of ~1,650
 - **Why**: Full body loads into context when skill triggers. Large skills crowd out conversation.
 - **Fix**: Move detailed reference material to `references/` directory. Add conditional loading triggers: "Read `references/X.md` if you encounter Y."
 

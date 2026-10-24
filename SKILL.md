@@ -1,11 +1,9 @@
 ---
 name: skill-refiner
 description: Validate and fix an Agent Skill against the spec. Checks frontmatter, naming, description quality, step structure, success criteria, tool patterns, and token budget. Use when a skill needs cleanup, after editing a SKILL.md, when a skill isn't triggering correctly, or to keep a self-modifying skill in check.
-allowed-tools: Read Write Edit Glob Grep AskUserQuestion
+allowed-tools: Read Write Edit Glob Grep AskUserQuestion Bash(ls:*) Bash(find:*) Bash(wc:*) Bash(python3:*)
 when_to_use: "Use when the user wants to validate a skill, fix a broken SKILL.md, check skill quality, or says things like 'refine this skill', 'check my skill', 'fix this skill', 'validate SKILL.md', 'why isn't my skill working'."
 argument-hint: "[path to SKILL.md or skill name]"
-arguments:
-  - target
 ---
 
 # Skill Refiner
@@ -26,10 +24,12 @@ These are the definitive source of truth. Every validation check traces back to 
 
 Find the target SKILL.md:
 
-1. If `$target` is a file path, read it directly
-2. If `$target` is a skill name, search in order:
-   - `.claude/skills/$target/SKILL.md` (project)
-   - `~/.claude/skills/$target/SKILL.md` (personal)
+The request: `$ARGUMENTS`
+
+1. If it is a file path, read it directly
+2. If it names a skill, search in order (strip a leading `/`; read "itself" or "this skill" as `skill-refiner`):
+   - `.claude/skills/<name>/SKILL.md` (project)
+   - `~/.claude/skills/<name>/SKILL.md` (personal)
 3. If no argument provided, ask the user which skill to refine using AskUserQuestion. List discovered skills from both locations using Glob.
 
 Also read the skill's parent directory to check for `references/`, `scripts/`, and other supporting files.
@@ -57,8 +57,8 @@ Check every item and record the result as PASS, WARN, or FAIL:
 
 ### Body Structure Checks
 - [ ] Body is < 500 lines
-- [ ] Body is < 5,000 tokens (estimate: lines x 4)
-- [ ] Every step section (`### N.`) has **Success criteria**
+- [ ] Body is < 5,000 tokens (estimate: characters / 4 — never lines x 4, which undercounts long prose lines several-fold)
+- [ ] Every step section (`### N.` or `## Step N:`) has **Success criteria**
 - [ ] Steps are numbered sequentially (no gaps)
 - [ ] Parallel steps use sub-numbering (3a, 3b)
 - [ ] Human steps marked with `[human]` in title
@@ -76,9 +76,17 @@ Check every item and record the result as PASS, WARN, or FAIL:
 - [ ] Directory name matches `name` field
 - [ ] Reference files referenced in body actually exist on disk
 - [ ] Scripts in `scripts/` are executable or have appropriate shebangs
+- [ ] Spec validator: `python3 ~/.claude/skills/skill-refiner/skills/anthropic-skills/skills/skill-creator/scripts/quick_validate.py <skill-dir>`. Keys it rejects that Claude Code honours (`when_to_use`, `argument-hint`, `arguments`, `context`) are WARN (not portable), never FAIL
 - [ ] No deeply nested file paths (keep to one level: `references/file.md` not `references/deep/nested/file.md`)
 
 **Success criteria**: Every checklist item evaluated. Results recorded.
+
+## Gotchas
+
+- **Named `arguments` bind one whitespace-separated word each.** `arguments: [target]` + `$target` turns `/x on the foo skill` into `target = "on"`. A free-text argument needs `$ARGUMENTS`.
+- **Two frontmatter standards.** The agentskills spec allows six keys (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`); Claude Code also reads `when_to_use`, `argument-hint`, `arguments`, `context`. Report which one a skill targets; don't push it to the other unasked.
+- **Respect documented deviations.** If a skill explains a deliberate departure (e.g. bare `Bash` in a maintenance reference), report it as a WARN with the stated reason and recommend no change unless the reason is wrong.
+- **A trimmed section must land somewhere.** When moving content to `references/`, check the target doesn't already hold it, and keep any fact that exists nowhere else.
 
 ## Step 3: Report Findings
 
