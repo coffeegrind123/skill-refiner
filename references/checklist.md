@@ -71,10 +71,10 @@ Full validation criteria for Agent Skills. Each item includes the rule, why it m
 - **Fix**: Move detailed reference material to `references/` directory. Add conditional loading triggers: "Read `references/X.md` if you encounter Y."
 
 ### Step Structure
-- **Rule**: Steps use `### N. Step Name` format
+- **Rule**: Steps use `### N. Step Name` or `## Step N: Step Name` format, one form per skill
 - **Rule**: Sequential: `1.`, `2.`, `3.` (no gaps)
 - **Rule**: Parallel: `3a.`, `3b.` (run concurrently)
-- **Rule**: Human: `### 4. Step Name [human]` (user performs this step)
+- **Rule**: Human: `[human]` at the end of the step title, e.g. `### 4. Step Name [human]` (user performs this step)
 - **Why**: Agents parse step structure for execution planning. Broken numbering = confused execution.
 - **Fix**: Renumber steps. Add sub-letters for parallel steps.
 

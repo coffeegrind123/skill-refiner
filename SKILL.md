@@ -1,7 +1,7 @@
 ---
 name: skill-refiner
 description: Validate and fix an Agent Skill against the spec. Checks frontmatter, naming, description quality, step structure, success criteria, tool patterns, and token budget. Use when a skill needs cleanup, after editing a SKILL.md, when a skill isn't triggering correctly, or to keep a self-modifying skill in check.
-allowed-tools: Read Write Edit Glob Grep AskUserQuestion Bash(ls:*) Bash(find:*) Bash(wc:*) Bash(python3:*)
+allowed-tools: Read Write Edit Glob Grep AskUserQuestion Bash(ls:*) Bash(wc:*) Bash(python3 ~/.claude/skills/skill-refiner/skills/anthropic-skills/skills/skill-creator/scripts/quick_validate.py:*)
 when_to_use: "Use when the user wants to validate a skill, fix a broken SKILL.md, check skill quality, or says things like 'refine this skill', 'check my skill', 'fix this skill', 'validate SKILL.md', 'why isn't my skill working'."
 argument-hint: "[path to SKILL.md or skill name]"
 ---
@@ -18,7 +18,7 @@ Validate an Agent Skill against the spec and fix issues. Works on any SKILL.md �
 - `skills/anthropic-skills/` — community examples of well-formed skills
 - `skills/SKILLIFY.md` — format reference and per-step annotation guide
 
-These are the definitive source of truth. Every validation check traces back to the spec in this submodule.
+These are the definitive source of truth. Every validation check traces back to the spec in this submodule. These paths sit deeper than the spec's one-level rule on purpose: `skills/` is a vendored reference collection, not this skill's own reference files.
 
 ## Step 1: Locate the Skill
 
@@ -80,13 +80,6 @@ Check every item and record the result as PASS, WARN, or FAIL:
 - [ ] No deeply nested file paths (keep to one level: `references/file.md` not `references/deep/nested/file.md`)
 
 **Success criteria**: Every checklist item evaluated. Results recorded.
-
-## Gotchas
-
-- **Named `arguments` bind one whitespace-separated word each.** `arguments: [target]` + `$target` turns `/x on the foo skill` into `target = "on"`. A free-text argument needs the whole-argument placeholder (a dollar sign followed by `ARGUMENTS`). Write that placeholder literally only where the input belongs: Claude Code substitutes it everywhere in the body, code spans included.
-- **Two frontmatter standards.** The agentskills spec allows six keys (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`); Claude Code also reads `when_to_use`, `argument-hint`, `arguments`, `context`. Report which one a skill targets; don't push it to the other unasked.
-- **Respect documented deviations.** If a skill explains a deliberate departure (e.g. bare `Bash` in a maintenance reference), report it as a WARN with the stated reason and recommend no change unless the reason is wrong.
-- **A trimmed section must land somewhere.** When moving content to `references/`, check the target doesn't already hold it, and keep any fact that exists nowhere else.
 
 ## Step 3: Report Findings
 
@@ -152,3 +145,10 @@ Show what was changed:
 - If the skill has no issues: confirm it passes all checks
 
 **Success criteria**: User informed of all changes.
+
+## Gotchas
+
+- **Named `arguments` bind one whitespace-separated word each.** `arguments: [target]` + `$target` turns `/x on the foo skill` into `target = "on"`. A free-text argument needs the whole-argument placeholder (a dollar sign followed by `ARGUMENTS`). Write that placeholder literally only where the input belongs: Claude Code substitutes it everywhere in the body, code spans included.
+- **Two frontmatter standards.** The agentskills spec allows six keys (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`); Claude Code also reads `when_to_use`, `argument-hint`, `arguments`, `context`. Report which one a skill targets; don't push it to the other unasked.
+- **Respect documented deviations.** If a skill explains a deliberate departure (e.g. bare `Bash` in a maintenance reference), report it as a WARN with the stated reason and recommend no change unless the reason is wrong.
+- **A trimmed section must land somewhere.** When moving content to `references/`, check the target doesn't already hold it, and keep any fact that exists nowhere else.
