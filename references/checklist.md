@@ -108,6 +108,12 @@ These are optional per step but should be used when relevant:
 - **Rule**: Avoid deep nesting: `references/deep/nested/file.md`
 - **Why**: Simpler paths = fewer agent errors
 
+### Links and Vendored Copies
+- **Rule**: Every symlink and every `.git` link file (`gitdir: ...`) in the skill folder must resolve
+- **Rule**: A vendored copy of another repo must match its source; compare with `diff -rq <copy> <source>`
+- **Why**: A dead submodule link leaves a frozen copy that can't be updated, and a skill that calls that copy authoritative works from stale rules
+- **Fix**: Re-clone it, or replace the copy with a symlink to a maintained checkout. Both delete the old copy, so back it up and get explicit approval first
+
 ### Scripts
 - **Rule**: Scripts in `scripts/` should be self-contained
 - **Rule**: Include shebangs (`#!/usr/bin/env python3`)

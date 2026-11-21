@@ -78,6 +78,7 @@ Check every item and record the result as PASS, WARN, or FAIL:
 - [ ] Scripts in `scripts/` are executable or have appropriate shebangs
 - [ ] Spec validator: `python3 ~/.claude/skills/skill-refiner/skills/anthropic-skills/skills/skill-creator/scripts/quick_validate.py <skill-dir>`. Keys it rejects that Claude Code honours (`when_to_use`, `argument-hint`, `arguments`, `context`) are WARN (not portable), never FAIL
 - [ ] No deeply nested file paths (keep to one level: `references/file.md` not `references/deep/nested/file.md`)
+- [ ] Every symlink and `.git` link file in the skill folder resolves, and a vendored copy matches its source (`diff -rq`)
 
 **Success criteria**: Every checklist item evaluated. Results recorded.
 
