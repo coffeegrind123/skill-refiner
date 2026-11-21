@@ -117,7 +117,9 @@ If there are FAIL or WARN items, use AskUserQuestion to ask which to fix. Offer 
 
 For items requiring judgment (e.g., rewriting the description), propose a specific fix and ask for confirmation.
 
-**Success criteria**: User has chosen what to fix.
+If the question goes unanswered (it times out), apply only the fixes that are reversible text edits. Hold back anything that deletes or replaces files or folders, and list it in the summary as waiting for approval.
+
+**Success criteria**: User has chosen what to fix, or the question timed out and only reversible fixes go ahead.
 
 ## Step 5: Apply Fixes
 
@@ -152,4 +154,5 @@ Show what was changed:
 - **Named `arguments` bind one whitespace-separated word each.** `arguments: [target]` + `$target` turns `/x on the foo skill` into `target = "on"`. A free-text argument needs the whole-argument placeholder (a dollar sign followed by `ARGUMENTS`). Write that placeholder literally only where the input belongs: Claude Code substitutes it everywhere in the body, code spans included.
 - **Two frontmatter standards.** The agentskills spec allows six keys (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`); Claude Code also reads `when_to_use`, `argument-hint`, `arguments`, `context`. Report which one a skill targets; don't push it to the other unasked.
 - **Respect documented deviations.** If a skill explains a deliberate departure (e.g. bare `Bash` in a maintenance reference), report it as a WARN with the stated reason and recommend no change unless the reason is wrong.
+- **A fix that deletes needs a backup and an explicit yes.** Before removing or replacing a file or folder (a stale vendored copy, a dead submodule), copy it somewhere safe and get approval for that specific deletion. A general "fix all" doesn't cover it, and neither does a timed-out question.
 - **A trimmed section must land somewhere.** When moving content to `references/`, check the target doesn't already hold it, and keep any fact that exists nowhere else.
